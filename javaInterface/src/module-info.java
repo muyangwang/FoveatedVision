@@ -1,0 +1,10 @@
+
+/**
+ * 
+ */
+/**
+ * @author alex
+ *
+ */
+module javaInterface {
+}

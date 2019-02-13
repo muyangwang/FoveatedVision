@@ -4,8 +4,8 @@
  * original image. 
  * */
 
-#ifndef RECEPTIVE_FIELD_H
-#define RECEPTIVE_FIELD_H
+#ifndef FOVEATED_IMAGE_H
+#define FOVEATED_IMAGE_H
 
 #define LAYER_NUMBER 5 // #layers in each foveated image
 #define FIELD_SIZE 32  //size of the receptive field
@@ -31,9 +31,11 @@ typedef struct {
     color_t** im;
 } image_t;
 
-// each field layer consist of 32*32 pixel values
+// Each field layer consist of 32*32 pixel values
+// The valid parameter determines whether the field color is a result of out of range.
 typedef struct {
     color_t field[FIELD_SIZE][FIELD_SIZE];
+    int valid[FIELD_SIZE][FIELD_SIZE];
 } field_t;
 
 // definition of a pixel location
@@ -52,7 +54,7 @@ typedef struct{
 /* Creates a foveatedImage (aka receptiveField) from a raw 
  * Image.
  */
-foveatedImage_t* createFoveatedImageFromRawImage(image_t* im);
+foveatedImage_t* createFoveatedImageFromRawImage(void* im, pos_t centerPosition);
 
 /* Destroy a foveatedImage instance.]
  */
@@ -74,8 +76,6 @@ void destroyReconstructedImage(void* reconstructedImage);
  * The image is stored in openCV cv::Mat format, and this function returns a void* point to the object.
  */
 void* createEmbeddedFoveatedImage(image_t* rawImage, foveatedImage_t* foveatedImage);
-
-
 
 
 #endif

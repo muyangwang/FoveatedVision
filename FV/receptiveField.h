@@ -26,9 +26,31 @@ typedef struct {
 
 typedef struct{
     int centerPosition;
-    field_t im[5];
+    field_t im[LAYER_NUMBER];
 
 } receptiveField_t;
+
+/* Creates a foveatedImage (aka receptiveField) from a raw 
+ * Image.
+ */
+receptiveField_t* createFoveatedImageFromRawImage(void* rawImage);
+
+/* Destroy a foveatedImage instance.]
+ */
+
+void destroyFoveatedImage(receptiveField_t* foveatedImage);
+
+/* Reconstruct a 512*512 matrix of color_t;
+ * The image is stored as opencv::Mat, and returns a void* point as reference.
+ * Raw Image generation is specified in openCV/image.h.
+ */
+void* createReconstructedImage(receptiveField_t* foveatedImage);
+
+/* Destroy the reconstructed matrix created by 
+ * createFoveatedImageFromRawImage()
+ */
+void destroyReconstructedImage(void* reconstructedImage);
+
 
 
 

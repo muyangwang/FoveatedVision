@@ -7,49 +7,73 @@
 #ifndef RECEPTIVE_FIELD_H
 #define RECEPTIVE_FIELD_H
 
-#define LAYER_NUMBER 5; // #layers in each foveated image
-#define FIELD_SIZE 32;  //size of the receptive field
+#define LAYER_NUMBER 5 // #layers in each foveated image
+#define FIELD_SIZE 32  //size of the receptive field
+
+#define FOVEATED_IMAGE_SIZE 512 // size of reconstructed image
 
 
 /* color structure used in foveated project. color is stored in BGR format, represented by a uint8_t(0-255).
  * 
  */
 typedef struct {
-    uint8_t B;
-    uint8_t G;
-    uint8_t R;
+    unsigned char B;
+    unsigned char G;
+    unsigned char R;
 }color_t;
 
+
+// TODO: copy raw image from raw opencv data may be expensive.
+// deprecate it if possible.
+typedef struct {
+    int height;
+    int length;
+    color_t** im;
+} image_t;
+
+// each field layer consist of 32*32 pixel values
 typedef struct {
     color_t field[FIELD_SIZE][FIELD_SIZE];
 } field_t;
 
-typedef struct{
-    int centerPosition;
-    field_t im[LAYER_NUMBER];
+// definition of a pixel location
+typedef struct {
+    int y;
+    int x;
+} pos_t;
 
-} receptiveField_t;
+// definition of foveated image.
+typedef struct{
+    pos_t centerPosition;
+    field_t image[LAYER_NUMBER];
+} foveatedImage_t;
+
 
 /* Creates a foveatedImage (aka receptiveField) from a raw 
  * Image.
  */
-receptiveField_t* createFoveatedImageFromRawImage(void* rawImage);
+foveatedImage_t* createFoveatedImageFromRawImage(image_t* im);
 
 /* Destroy a foveatedImage instance.]
  */
-
-void destroyFoveatedImage(receptiveField_t* foveatedImage);
+void destroyFoveatedImage(foveatedImage_t* foveatedImage);
 
 /* Reconstruct a 512*512 matrix of color_t;
- * The image is stored as opencv::Mat, and returns a void* point as reference.
- * Raw Image generation is specified in openCV/image.h.
+ * The image is stored in openCV cv::Mat format, and this function returns a void* point to the object.
+ * Raw Image conversion is defined in openCV/image.h
  */
-void* createReconstructedImage(receptiveField_t* foveatedImage);
+void* createReconstructedImage(foveatedImage_t* foveatedImage);
 
 /* Destroy the reconstructed matrix created by 
  * createFoveatedImageFromRawImage()
  */
 void destroyReconstructedImage(void* reconstructedImage);
+
+
+/* Create an image with foveated area embedded;
+ * The image is stored in openCV cv::Mat format, and this function returns a void* point to the object.
+ */
+void* createEmbeddedFoveatedImage(image_t* rawImage, foveatedImage_t* foveatedImage);
 
 
 

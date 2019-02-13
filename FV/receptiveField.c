@@ -3,6 +3,8 @@
 
 #include <stdlib.h>
 
+#define TTT 1
+
 receptiveField_t* createFoveatedImageFromRawImage(void* rawImage){
     receptiveField_t* foveatedImage = (receptiveField_t*) malloc(sizeof(receptiveField_t));
 
@@ -14,11 +16,14 @@ void destroyFoveatedImage(receptiveField_t* foveatedImage){
 }
 
 void* createReconstructedImage(receptiveField_t* foveatedImage){
-    reconstructedImage = imageFromPixels();
+    color_t** im = (color_t**) malloc(sizeof(color_t*));
+    int a[TTT];
+    void* reconstructedImage = (void *) imageFromPixels(im);
+    free(im);
     return reconstructedImage;
 }
 
 void destroyReconstructedImage(void* reconstructedImage){
-
+    opencvDestroyImage(reconstructedImage);
 }
 

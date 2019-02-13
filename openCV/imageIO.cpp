@@ -14,7 +14,6 @@ void printImage(cv::Mat* image, char* imageName) {
     waitKey(0);
 }
 
-void generateFullWindow() {
-
+void getPixelValue(cv::Mat* image, int y, int x) {
 }
 

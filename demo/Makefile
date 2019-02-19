@@ -1,5 +1,5 @@
 CC = g++
-CFLAGS = -g -O2 -Wall -Werror -std=c++11
+CFLAGS = -g -O2 -Wall -std=c++11
 demo1SRCS = demo1.cpp
 demo1PROG = demo1.exe
 demo2SRCS = demo2.cpp
@@ -14,10 +14,11 @@ ifeq ($(OS),Windows_NT)
 else
     UNAME_S := $(shell uname -s)
     ifeq ($(UNAME_S),Linux)
+    	CFLAGS += -Werror
         OPENCV = `pkg-config opencv --cflags --libs`
     endif
     ifeq ($(UNAME_S),Darwin)
-        OPENCV = `pkg-config opencv --cflags --libs`
+        OPENCV = `pkg-config --cflags --libs /usr/local/Cellar/opencv/4.0.1/lib/pkgconfig/opencv4.pc`
     endif
 endif
 
@@ -39,6 +40,6 @@ test: $(TESTSRCS)
 	$(CC) $(CFLAGS) -o $(TESTPROG) $(TESTSRCS) $(OPENCVLIBS)
 
 clean:
-	rm *.o *.exe
+	rm -f *.o *.exe
 
 

@@ -48,6 +48,9 @@ private:
 
     /* select a color for a block*/
     fv_color_t colorSelector(int pos_y, int pos_x, int layer);
+    
+    /* update foveated image with a new center position*/
+    void updateFV(cv::Point centerPosition);
 
 public:
     foveatedImage_t() = delete;
@@ -57,6 +60,7 @@ public:
      * default constructor is disabled.
      */
     foveatedImage_t(cv::Mat* rawImage, cv::Point centerPosition);
+
 
     /* destructor. Will also destroy the reconstructed image if its not freed properly before.*/
     ~foveatedImage_t();

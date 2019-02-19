@@ -30,9 +30,10 @@ static void onMouse(int event, int x, int y, int, void* data) {
     *(mouse_data->curserPos) = Point(x, y);
     setTrackbarPos("curserPos_x", mouse_data->imageName, x);
     setTrackbarPos("curserPos_y", mouse_data->imageName, y);
+
     mouse_data->fv->resetCenter(Point(x, y));
     Mat* re = mouse_data->fv->getReconstructedImage();
-    imshow("recon1", *re);
+    imshow(mouse_data->reconName, *re);
 }
 
 int main(int argc, char** argv) {

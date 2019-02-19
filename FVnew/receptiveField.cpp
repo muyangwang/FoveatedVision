@@ -9,10 +9,14 @@ using namespace std;
 foveatedImage_t::foveatedImage_t(cv::Mat* rawImage, cv::Point centerPosition) {
     this->origin = rawImage;
     this->centerPosition = centerPosition;
-    //cout << "centerPosition " << centerPosition.x << " " << centerPosition.y << endl;
     this->reconstructedImage = nullptr;
     this->embeddedReconstrcutedImage = nullptr;
+    updateFV(this->centerPosition);
+    //cout << "centerPosition " << centerPosition.x << " " << centerPosition.y << endl;
+}
 
+void foveatedImage_t::updateFV(cv::Point centerPosition) {
+    this->centerPosition = centerPosition;
     for (int layer=0; layer < LAYER_NUMBER; ++layer) {
         int blockSize = pow(2, layer);
         for (int i = 0; i < FIELD_SIZE; ++i) {
@@ -36,7 +40,7 @@ foveatedImage_t::~foveatedImage_t() {
 
 void foveatedImage_t::resetCenter(cv::Point newCenter) {
     this->centerPosition = newCenter;
-    foveatedImage_t(this->origin, this->centerPosition);
+    this->updateFV(newCenter);
     if (this->reconstructedImage != nullptr) {
         delete this->reconstructedImage;
         this->createReconstructedImage();

@@ -32,15 +32,10 @@ typedef struct field_t {
     fv_color_t field[FIELD_SIZE][FIELD_SIZE];
 } field_t;
 
-typedef struct pixel_loc_t {
-    int y;
-    int x;
-} pixel_loc_t;
-
 class foveatedImage_t {
 private:
     
-    pixel_loc_t centerPosition;
+    cv::Point centerPosition;
 
     field_t field[LAYER_NUMBER];
 
@@ -61,7 +56,7 @@ public:
      * Must be created from a raw image with a given center position.
      * default constructor is disabled.
      */
-    foveatedImage_t(cv::Mat* rawImage, pixel_loc_t centerPosition);
+    foveatedImage_t(cv::Mat* rawImage, cv::Point centerPosition);
 
     /* destructor. Will also destroy the reconstructed image if its not freed properly before.*/
     ~foveatedImage_t();

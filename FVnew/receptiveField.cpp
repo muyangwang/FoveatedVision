@@ -1,9 +1,9 @@
 #include "receptiveField.h"
 
-#include "../utilities/tools.h"
+#include "tools.h"
 #include <cstring>
 
-foveatedImage_t::foveatedImage_t(cv::Mat* rawImage, pixel_loc_t centerPosition) {
+foveatedImage_t::foveatedImage_t(cv::Mat* rawImage, cv::Point centerPosition) {
     this->origin = rawImage;
     this->centerPosition = centerPosition;
 
@@ -65,6 +65,7 @@ void foveatedImage_t::freeReconstructedImage() {
 }
 
 cv::Mat* foveatedImage_t::createEmbeddedFoveatedImage() {
+    return this->embeddedReconstrcutedImage;
 }
 
 cv::Mat* foveatedImage_t::getReconstructedEmbeddedImage() {
@@ -160,6 +161,3 @@ fv_color_t foveatedImage_t::colorSelector(int pos_y, int pos_x, int layer) {
 }
 
 
-
-
-}

@@ -1,10 +1,19 @@
 CC = g++
-CFLAGS = -g -Wall
-SRCS = receptiveField.cpp
-PROG = HelloWorld
+CFLAGS = -c -Wall
+SRCS = receptiveField.cpp tools.cpp
+OBJS = receptiveField.o tools.o
+LIBS = FVlib.a
 
 OPENCV = `pkg-config opencv --cflags --libs`
-LIBS = $(OPENCV)
+OPENCVLIBS = $(OPENCV)
 
-$(PROG):$(SRCS)
-	$(CC) $(CFLAGS) -o $(PROG) $(SRCS) $(LIBS)
+$(OBJS): $(SRCS)
+	$(CC) $(CFLAGS) $(SRCS) $(OPENCVLIBS)
+
+$(LIBS): $(OBJS)
+	ar rcs $(LIBS) $(OBJS)
+
+libs: $(LIBS)
+
+clean:
+	rm *.o *.a

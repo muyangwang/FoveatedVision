@@ -1,5 +1,7 @@
 #include "tools.h"
 
+#include<cstdlib>
+
 int pow(int a, int b) {
     if (b == 0) return 1;
     int res = 1;
@@ -11,5 +13,5 @@ int pow(int a, int b) {
 }
 
 int randomNumberGen(int a) {
-    return 0;
+    return rand() % a;
 }

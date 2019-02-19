@@ -2,17 +2,25 @@
 
 #include "tools.h"
 #include <cstring>
+#include <iostream>
+
+using namespace std;
 
 foveatedImage_t::foveatedImage_t(cv::Mat* rawImage, cv::Point centerPosition) {
     this->origin = rawImage;
     this->centerPosition = centerPosition;
+    cout << "centerPosition " << centerPosition.x << " " << centerPosition.y << endl;
+    this->reconstructedImage = nullptr;
+    this->embeddedReconstrcutedImage = nullptr;
 
     for (int layer=0; layer < LAYER_NUMBER; ++layer) {
-        int blockSize = pow(2, layer-1);
+        cout << "layer " << layer << endl;
+        int blockSize = pow(2, layer);
         for (int i = 0; i < FIELD_SIZE; ++i) {
             for (int j = 0; j < FIELD_SIZE; ++j) {
                 int pos_y = centerPosition.y + (i-16)*blockSize;
                 int pos_x = centerPosition.x + (j-16)*blockSize;
+                cout << "set color for layer: " << layer << "y:" << i << " x:" << j << endl;
                 this->field[layer].field[i][j] =this->colorSelector(pos_y, pos_x, layer);
             }
         }
@@ -29,18 +37,20 @@ foveatedImage_t::~foveatedImage_t() {
 };
 
 cv::Mat* foveatedImage_t::createReconstructedImage() {
-    this->reconstructedImage = new cv::Mat();
     int imageSize = FIELD_SIZE*pow(2, LAYER_NUMBER-1);
+    this->reconstructedImage = new cv::Mat(imageSize, imageSize,CV_8UC3, cv::Scalar(0,0,0));
+    cout << "imSize" << imageSize << endl;
     for (int i = 0; i< LAYER_NUMBER; ++i) {
         int layer = LAYER_NUMBER-i-1;
-        int blockSize = pow(2, layer-1);
+        int blockSize = pow(2, layer);
+        cout << "blockSize" << blockSize << endl;
         for (int j = 0; j < FIELD_SIZE; ++j) {
             for (int k = 0; k < FIELD_SIZE; ++k) {
-                int yStartInIndex = imageSize/2+(j-FIELD_SIZE/2-1)*blockSize;
-                int xStartIndex = imageSize/2+(k-FIELD_SIZE/2-1)*blockSize;
+                int yStartInIndex = imageSize/2+(j-FIELD_SIZE/2)*blockSize;
+                int xStartIndex = imageSize/2+(k-FIELD_SIZE/2)*blockSize;
                 for (int l = 0; l < blockSize; ++l) {
                     for (int m = 0; m < blockSize; ++m) {
-                        this->reconstructedImage->at<cv::Vec3b>(yStartInIndex+l, xStartIndex+m) = this->field->field[j][k].c;
+                        this->reconstructedImage->at<cv::Vec3b>(cv::Point(xStartIndex+m,yStartInIndex+l)) = this->field[layer].field[j][k].c;
                     }
                 }
             }
@@ -94,6 +104,7 @@ fv_color_t foveatedImage_t::colorSelector(int pos_y, int pos_x, int layer) {
     c.valid = false;
 
     if (layer == 1) {
+        cout << "layer is 1" << endl;
         if (pos_y >= 0 && 
                 pos_y < imHeight &&
                 pos_x >= 0 &&
@@ -105,28 +116,29 @@ fv_color_t foveatedImage_t::colorSelector(int pos_y, int pos_x, int layer) {
         }
     }
     else {
-        int blockSize = pow(2, layer-1);
+        int blockSize = pow(2, layer);
         if (pos_y >= imHeight ||
                 pos_y+blockSize-1 < 0 ||
                 pos_x >= imWidth ||
                 pos_x+blockSize-1<0) {
+            cout << "completely out of range" << endl;
             // the block is completely out of range.
             // set valid param to 0.
             c.valid = false;
             return c;
         }
 
-        if (pos_y >= 0 &&
-                pos_y+blockSize-1 < imHeight &&
-                pos_x >= 0 &&
-                pos_y+blockSize-1 < imWidth) {
+        //        pos_y+blockSize-1 < imHeight &&
+        //        pos_x >= 0 &&
+        //        pos_y+blockSize-1 < imWidth) {
             // the entire block is in range.
             // Set block color to a random pixel
             
-            return c;
-        }
+            
+        //    return c;
+        //}
         
-        // The block is half in range and half out of range.
+        // The block has at least part in range.
         // we select a random pixel for the inrange part.
         int topBorder, leftBorder, rightBorder, botBorder;
         if (pos_y < 0) {
@@ -153,7 +165,7 @@ fv_color_t foveatedImage_t::colorSelector(int pos_y, int pos_x, int layer) {
         int sizeW = rightBorder-leftBorder+1;
         int y = randomNumberGen(sizeH);
         int x = randomNumberGen(sizeW);
-        c.c = this->origin->at<cv::Vec3b>(y, x);
+        c.c = this->origin->at<cv::Vec3b>(topBorder+y, leftBorder+x);
         c.valid = true;
         return c;
     }

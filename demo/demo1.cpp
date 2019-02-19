@@ -1,6 +1,7 @@
 #include <opencv2/opencv.hpp>
 #include <opencv2/highgui.hpp>
 #include<iostream>
+#include<cstdlib>
 
 #include "../FVnew/receptiveField.h"
 
@@ -10,6 +11,7 @@ using namespace std;
 struct mouse_data_t{
     Point* curserPos;
     const char* imageName;
+    const char* reconName;
 };
 
 
@@ -37,6 +39,9 @@ int main(int argc, char** argv) {
         parser.printMessage();
         return 0;
     }
+    
+    //set seed for random number
+    srand(time(NULL));
 
     Mat image;
     int xRange, yRange;
@@ -56,21 +61,21 @@ int main(int argc, char** argv) {
     mouse_data_t mouse_data;
     mouse_data.curserPos = &curserPos;
     mouse_data.imageName = imageName;
+    mouse_data.reconName = "recon";
 
 
     createTrackbar("curserPos_x", imageName, &curserPos.x, xRange, 0);
     createTrackbar("curserPos_y", imageName, &curserPos.y, yRange, 0);
     setTrackbarPos("curserPos_x", imageName, xRange/2);
-    setTrackbarPos("curserPos_x", imageName, yRange/2);
+    setTrackbarPos("curserPos_y", imageName, yRange/2);
 
+
+
+    foveatedImage_t fvImage(&image, curserPos);
+    Mat* re = fvImage.getReconstructedImage();
 
     setMouseCallback(imageName, onMouse, &mouse_data);
-    
-    cout <<"a" << endl;
-    foveatedImage_t fvImage(&image, curserPos);
-    cout << "b" << endl;
-    Mat* re = fvImage.getReconstructedImage();
-    cout << "c" << endl;
+
     imshow(imageName, image);
     imshow("recon", *re);
     while(0) {
@@ -81,5 +86,6 @@ int main(int argc, char** argv) {
             break;
         }
     }
+    waitKey(0);
     return 0;
 }

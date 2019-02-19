@@ -17,6 +17,7 @@ demo1:$(demo1SRCS)
 ui:$(UISRCS)
 	$(CC) $(CFLAGS) -o $(UIPROG) $(UISRCS) $(OPENCVLIBS)
 
+
 clean:
 	rm *.o *.exe
 

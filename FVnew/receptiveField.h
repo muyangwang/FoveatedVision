@@ -61,6 +61,8 @@ public:
     /* destructor. Will also destroy the reconstructed image if its not freed properly before.*/
     ~foveatedImage_t();
 
+    void resetCenter(cv::Point newCenter);
+
     /* Reconstruct a raw openCV format(cv::Mat) image from the foveatedImage. The image is stored in a seperated allocated memory space; Need to be freed after use. We provide a private pointer to locate that reconstructed image. Will try to free the reconstructed image for safety in destructor.
      */
     cv::Mat* createReconstructedImage();

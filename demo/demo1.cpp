@@ -12,6 +12,7 @@ struct mouse_data_t{
     Point* curserPos;
     const char* imageName;
     const char* reconName;
+    foveatedImage_t* fv;
 };
 
 
@@ -29,6 +30,9 @@ static void onMouse(int event, int x, int y, int, void* data) {
     *(mouse_data->curserPos) = Point(x, y);
     setTrackbarPos("curserPos_x", mouse_data->imageName, x);
     setTrackbarPos("curserPos_y", mouse_data->imageName, y);
+    mouse_data->fv->resetCenter(Point(x, y));
+    Mat* re = mouse_data->fv->getReconstructedImage();
+    imshow("recon1", *re);
 }
 
 int main(int argc, char** argv) {
@@ -69,9 +73,10 @@ int main(int argc, char** argv) {
     setTrackbarPos("curserPos_x", imageName, xRange/2);
     setTrackbarPos("curserPos_y", imageName, yRange/2);
 
-
-
     foveatedImage_t fvImage(&image, curserPos);
+    mouse_data.fv = &fvImage;
+
+
     Mat* re = fvImage.getReconstructedImage();
 
     setMouseCallback(imageName, onMouse, &mouse_data);

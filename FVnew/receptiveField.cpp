@@ -9,18 +9,16 @@ using namespace std;
 foveatedImage_t::foveatedImage_t(cv::Mat* rawImage, cv::Point centerPosition) {
     this->origin = rawImage;
     this->centerPosition = centerPosition;
-    cout << "centerPosition " << centerPosition.x << " " << centerPosition.y << endl;
+    //cout << "centerPosition " << centerPosition.x << " " << centerPosition.y << endl;
     this->reconstructedImage = nullptr;
     this->embeddedReconstrcutedImage = nullptr;
 
     for (int layer=0; layer < LAYER_NUMBER; ++layer) {
-        cout << "layer " << layer << endl;
         int blockSize = pow(2, layer);
         for (int i = 0; i < FIELD_SIZE; ++i) {
             for (int j = 0; j < FIELD_SIZE; ++j) {
                 int pos_y = centerPosition.y + (i-16)*blockSize;
                 int pos_x = centerPosition.x + (j-16)*blockSize;
-                cout << "set color for layer: " << layer << "y:" << i << " x:" << j << endl;
                 this->field[layer].field[i][j] =this->colorSelector(pos_y, pos_x, layer);
             }
         }
@@ -36,14 +34,25 @@ foveatedImage_t::~foveatedImage_t() {
     }
 };
 
+void foveatedImage_t::resetCenter(cv::Point newCenter) {
+    this->centerPosition = newCenter;
+    foveatedImage_t(this->origin, this->centerPosition);
+    if (this->reconstructedImage != nullptr) {
+        delete this->reconstructedImage;
+        this->createReconstructedImage();
+    }
+    if (this->embeddedReconstrcutedImage != nullptr) {
+        delete this->embeddedReconstrcutedImage;
+        this->createEmbeddedFoveatedImage();
+    }
+}
+
 cv::Mat* foveatedImage_t::createReconstructedImage() {
     int imageSize = FIELD_SIZE*pow(2, LAYER_NUMBER-1);
     this->reconstructedImage = new cv::Mat(imageSize, imageSize,CV_8UC3, cv::Scalar(0,0,0));
-    cout << "imSize" << imageSize << endl;
     for (int i = 0; i< LAYER_NUMBER; ++i) {
         int layer = LAYER_NUMBER-i-1;
         int blockSize = pow(2, layer);
-        cout << "blockSize" << blockSize << endl;
         for (int j = 0; j < FIELD_SIZE; ++j) {
             for (int k = 0; k < FIELD_SIZE; ++k) {
                 int yStartInIndex = imageSize/2+(j-FIELD_SIZE/2)*blockSize;
@@ -104,7 +113,6 @@ fv_color_t foveatedImage_t::colorSelector(int pos_y, int pos_x, int layer) {
     c.valid = false;
 
     if (layer == 1) {
-        cout << "layer is 1" << endl;
         if (pos_y >= 0 && 
                 pos_y < imHeight &&
                 pos_x >= 0 &&
@@ -121,7 +129,7 @@ fv_color_t foveatedImage_t::colorSelector(int pos_y, int pos_x, int layer) {
                 pos_y+blockSize-1 < 0 ||
                 pos_x >= imWidth ||
                 pos_x+blockSize-1<0) {
-            cout << "completely out of range" << endl;
+            //cout << "completely out of range" << endl;
             // the block is completely out of range.
             // set valid param to 0.
             c.valid = false;

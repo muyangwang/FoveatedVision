@@ -9,7 +9,18 @@ UIPROG = ui.exe
 TESTSRCS = test.cpp
 TESTPROG = test.exe
 
-OPENCV = `pkg-config opencv --cflags --libs`
+ifeq ($(OS),Windows_NT)
+    # not adding windows yet
+else
+    UNAME_S := $(shell uname -s)
+    ifeq ($(UNAME_S),Linux)
+        OPENCV = `pkg-config opencv --cflags --libs`
+    endif
+    ifeq ($(UNAME_S),Darwin)
+        OPENCV = `pkg-config opencv --cflags --libs`
+    endif
+endif
+
 OPENCVLIBS = $(OPENCV)
 
 LD = -I../FVnew

@@ -1,5 +1,5 @@
 CC = g++
-CFLAGS = -g -c -Wall
+CFLAGS = -g -c -O2 -Wall -Werror -std=c++11
 SRCS = receptiveField.cpp tools.cpp
 OBJS = receptiveField.o tools.o
 LIBS = FVlib.a

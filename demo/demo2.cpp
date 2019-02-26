@@ -48,7 +48,7 @@ int main( int argc, const char** argv )
             continue;
         }
         imshow("webcam", image);
-        foveatedImage_t fv(&image, curserPos);
+        foveatedImage_t fv(&image, curserPos, bgr);
         Mat* fvRecon = fv.getReconstructedImage();
         imshow("foveatedVideo", *fvRecon);
         waitKey(5);

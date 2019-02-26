@@ -3,31 +3,28 @@
 
 #include "color.h"
 
+#define FIELD_SIZE 32  //size of the receptive field
 
 /* an abstract classf of field type*/
 class field_t {
-public:
-    field_t(){}
-    ~field_t(){}
-    virtual fv_color_t& at(int y, int x);
-};
-
-class bgr_field_t : public field_t{
 private:
-    fv_bgr_color_t field[FIELD_SIZE][FIELD_SIZE];
+    fv_color_t* field;
 public:
-    fv_bgr_color_t& at(int y, int x) {
-        return field[y][x];
+    field_t() :field(nullptr){};
+    field_t(channel_t channel){
+        switch (channel) {
+            case channel_t::bgr:
+                field = new fv_bgr_color_t[FIELD_SIZE*FIELD_SIZE]();
+                break;
+            case channel_t::grayscale:
+                field = new fv_grayscale_color_t[FIELD_SIZE*FIELD_SIZE]();
+                break;
+        }
     }
-};
+    ~field_t(){delete []field;}
 
-class grayscale_field_t : public field_t {
-private:
-    fv_grayscale_color_t field[FIELD_SIZE][FIELD_SIZE];
-public:
     fv_color_t& at(int y, int x) {
-        return field[y][x];
+        return field[y*FIELD_SIZE+x];
     }
 };
-
 #endif

@@ -1,8 +1,8 @@
 
 CC = g++
 CFLAGS = -g -c -O2 -Wall -std=c++11
-SRCS = foveatedImage.cpp tools.cpp
-OBJS = foveatedImage.o tools.o
+SRCS = foveatedImage.cpp tools.cpp color.cpp
+OBJS = foveatedImage.o tools.o color.o
 LIBS = FVlib.a
 
 

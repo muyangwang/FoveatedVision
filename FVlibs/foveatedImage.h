@@ -10,9 +10,9 @@
 #include<opencv2/opencv.hpp>
 
 #include "color.h"
+#include "field.h"
 
 #define LAYER_NUMBER 5 // #layers in each foveated image
-#define FIELD_SIZE 32  //size of the receptive field
 
 #define FOVEATED_IMAGE_SIZE 512 // size of reconstructed image
 
@@ -20,46 +20,26 @@
 #define COLOR_LEN_BGR 3
 
 
-/* an abstract classf of field type*/
-class field_t {
-public:
-    virtual fv_color_t& at(int y, int x);
-};
-
-class bgr_field_t : public field_t{
-private:
-    fv_bgr_color_t field[FIELD_SIZE][FIELD_SIZE];
-public:
-    fv_color_t& at(int y, int x) {
-        return field[y][x];
-    }
-};
-
-class grayscale_field_t : public field_t {
-private:
-    fv_grayscale_color_t field[FIELD_SIZE][FIELD_SIZE];
-public:
-    fv_color_t& at(int y, int x) {
-        return field[y][x];
-    }
-};
 
 class foveatedImage_t {
 private:
+    channel_t channel;
     
     cv::Point centerPosition;
 
-    field_t field[LAYER_NUMBER];
+    /* pointer to original image*/
+    cv::Mat* origin;
+    
+    /* pointers to all fields */
+    field_t* field[LAYER_NUMBER];
 
     /* pointers to reconstructedImages*/
     cv::Mat* reconstructedImage;
     cv::Mat* embeddedReconstrcutedImage;
 
-    /* pointer to original image*/
-    cv::Mat* origin;
 
-    /* select a color for a block*/
-    fv_color_t colorSelector(int pos_y, int pos_x, int layer);
+    /* select a color for a block, and store it in target*/
+    void colorSelector(int pos_y, int pos_x, int layer, fv_color_t& target);
     
     /* update foveated image with a new center position*/
     void updateFV(cv::Point centerPosition);
@@ -71,7 +51,7 @@ public:
      * Must be created from a raw image with a given center position.
      * default constructor is disabled.
      */
-    foveatedImage_t(cv::Mat* rawImage, cv::Point centerPosition);
+    foveatedImage_t(cv::Mat* rawImage, cv::Point centerPosition, channel_t channel);
 
 
     /* destructor. Will also destroy the reconstructed image if its not freed properly before.*/

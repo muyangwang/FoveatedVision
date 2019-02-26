@@ -20,12 +20,6 @@ fv_bgr_color_t& fv_bgr_color_t::operator=(const fv_bgr_color_t&& rhs) noexcept {
     return *this;
 }
 
-fv_bgr_color_t& fv_bgr_color_t::operator=(const fv_bgr_color_t rhs) noexcept {
-    this->color = rhs.color;
-    this->setValid(rhs.isValid());
-    return *this;
-}
-
 fv_grayscale_color_t& fv_grayscale_color_t::operator=(const fv_grayscale_color_t& rhs) noexcept {
     this->color = rhs.color;
     this->setValid(rhs.isValid());
@@ -33,13 +27,6 @@ fv_grayscale_color_t& fv_grayscale_color_t::operator=(const fv_grayscale_color_t
 }
 
 fv_grayscale_color_t& fv_grayscale_color_t::operator=(const fv_grayscale_color_t&& rhs) noexcept {
-    this->color = rhs.color;
-    this->setValid(rhs.isValid());
-    return *this;
-}
-
-
-fv_grayscale_color_t& fv_grayscale_color_t::operator=(const fv_grayscale_color_t rhs) noexcept {
     this->color = rhs.color;
     this->setValid(rhs.isValid());
     return *this;

@@ -6,13 +6,17 @@
 
 using namespace std;
 
-foveatedImage_t::foveatedImage_t(cv::Mat* rawImage, cv::Point centerPosition) {
-    this->origin = rawImage;
-    this->centerPosition = centerPosition;
-    this->reconstructedImage = nullptr;
-    this->embeddedReconstrcutedImage = nullptr;
+foveatedImage_t::foveatedImage_t(cv::Mat* rawImage, cv::Point centerPosition, channel_t channel_in)
+        :channel(channel_in),
+        centerPosition(centerPosition),
+        origin(rawImage),
+        reconstructedImage(nullptr),
+        embeddedReconstrcutedImage(nullptr)
+{
+    for (int i = 0; i < LAYER_NUMBER; ++i) {
+        field[i] = new field_t(channel);
+    }
     updateFV(this->centerPosition);
-    //cout << "centerPosition " << centerPosition.x << " " << centerPosition.y << endl;
 }
 
 void foveatedImage_t::updateFV(cv::Point centerPosition) {
@@ -23,7 +27,7 @@ void foveatedImage_t::updateFV(cv::Point centerPosition) {
             for (int j = 0; j < FIELD_SIZE; ++j) {
                 int pos_y = centerPosition.y + (i-16)*blockSize;
                 int pos_x = centerPosition.x + (j-16)*blockSize;
-                this->field[layer].field[i][j] =this->colorSelector(pos_y, pos_x, layer);
+                colorSelector(pos_y, pos_x, layer, this->field[layer]->at(i,j));
             }
         }
     }
@@ -35,6 +39,9 @@ foveatedImage_t::~foveatedImage_t() {
     }
     if (this->embeddedReconstrcutedImage != nullptr) {
         this->freeEmbeddedReconstructedImage();
+    }
+    for (int i = 0; i < LAYER_NUMBER; ++i) {
+        delete field[i];
     }
 };
 
@@ -63,7 +70,16 @@ cv::Mat* foveatedImage_t::createReconstructedImage() {
                 int xStartIndex = imageSize/2+(k-FIELD_SIZE/2)*blockSize;
                 for (int l = 0; l < blockSize; ++l) {
                     for (int m = 0; m < blockSize; ++m) {
-                        this->reconstructedImage->at<cv::Vec3b>(cv::Point(xStartIndex+m,yStartInIndex+l)) = this->field[layer].field[j][k].c;
+                        switch(channel) {
+                            case channel_t::bgr:
+                                this->reconstructedImage->at<cv::Vec3b>(cv::Point(xStartIndex+m,yStartInIndex+l)) 
+                                    = dynamic_cast<fv_bgr_color_t*>(&this->field[layer]->at(j,k))->getColor();
+                                break;
+                            case channel_t::grayscale:
+                                this->reconstructedImage->at<cv::Vec3b>(cv::Point(xStartIndex+m,yStartInIndex+l)) 
+                                    = dynamic_cast<fv_grayscale_color_t*>(&this->field[layer]->at(j,k))->getColor();
+                                break;
+                        }
                     }
                 }
             }
@@ -106,15 +122,10 @@ void foveatedImage_t::freeEmbeddedReconstructedImage() {
     }
 }
 
-fv_color_t foveatedImage_t::colorSelector(int pos_y, int pos_x, int layer) {
-    fv_color_t c;
+void foveatedImage_t::colorSelector(int pos_y, int pos_x, int layer, fv_color_t& target) {
+
     int imHeight = this->origin->rows;
     int imWidth = this->origin->cols;
-    
-    c.c[0] = 0;
-    c.c[1] = 0;
-    c.c[2] = 0;
-    c.valid = false;
 
     if (layer == 1) {
         if (pos_y >= 0 && 
@@ -122,9 +133,17 @@ fv_color_t foveatedImage_t::colorSelector(int pos_y, int pos_x, int layer) {
                 pos_x >= 0 &&
                 pos_x < imWidth) {
             // the pixel is in the range of original picture
-            c.c = this->origin->at<cv::Vec3b>(pos_y, pos_x);
-            c.valid = true;
-            return c;
+            
+            switch (channel) {
+                case channel_t::bgr:
+                    dynamic_cast<fv_bgr_color_t&>(target).setColor(origin->at<cv::Vec3b>(pos_y, pos_x));
+                    break;
+                case channel_t::grayscale:
+                    dynamic_cast<fv_grayscale_color_t&>(target).setColor(origin->at<uchar>(pos_y, pos_x));
+                    break;
+            }
+            target.setValid(true);
+            return;
         }
     }
     else {
@@ -136,8 +155,8 @@ fv_color_t foveatedImage_t::colorSelector(int pos_y, int pos_x, int layer) {
             //cout << "completely out of range" << endl;
             // the block is completely out of range.
             // set valid param to 0.
-            c.valid = false;
-            return c;
+            target.setValid(false);
+            return;
         }
 
         //        pos_y+blockSize-1 < imHeight &&
@@ -177,11 +196,18 @@ fv_color_t foveatedImage_t::colorSelector(int pos_y, int pos_x, int layer) {
         int sizeW = rightBorder-leftBorder+1;
         int y = randomNumberGen(sizeH);
         int x = randomNumberGen(sizeW);
-        c.c = this->origin->at<cv::Vec3b>(topBorder+y, leftBorder+x);
-        c.valid = true;
-        return c;
+        switch(channel){
+            case channel_t::bgr:
+                dynamic_cast<fv_bgr_color_t&>(target).setColor(this->origin->at<cv::Vec3b>(topBorder+y, leftBorder+x));
+                break;
+            case channel_t::grayscale:
+                dynamic_cast<fv_grayscale_color_t&>(target).setColor(this->origin->at<uchar>(topBorder+y, leftBorder+x));
+                break;
+        }
+        target.setValid(true);
+        return;
     }
-    return c;
+    return;
 }
 
 

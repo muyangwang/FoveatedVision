@@ -74,7 +74,7 @@ int main(int argc, char** argv) {
     setTrackbarPos("curserPos_x", imageName, xRange/2);
     setTrackbarPos("curserPos_y", imageName, yRange/2);
 
-    foveatedImage_t fvImage(&image, curserPos);
+    foveatedImage_t fvImage(&image, curserPos, bgr);
     mouse_data.fv = &fvImage;
 
 

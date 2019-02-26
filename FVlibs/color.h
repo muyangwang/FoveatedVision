@@ -14,8 +14,8 @@ enum channel_t {
 class fv_color_t {
     bool valid;
 public:
-    fv_color_t();
-    ~fv_color_t(){}
+    fv_color_t(){}
+    virtual ~fv_color_t(){}
     fv_color_t(int v):valid(v){}
     fv_color_t(fv_color_t& rhs);
     fv_color_t(fv_color_t&& rhs);
@@ -23,10 +23,8 @@ public:
     bool isValid() const {return valid;}
     void setValid(bool v){valid = v;}
 
-    virtual fv_color_t& operator=(const fv_color_t& rhs) noexcept;
-    virtual fv_color_t& operator=(const fv_color_t&& rhs) noexcept;
-    virtual fv_color_t& operator=(const fv_color_t rhs) noexcept;
-
+    fv_color_t& operator=(const fv_color_t& rhs) noexcept = delete;
+    fv_color_t& operator=(const fv_color_t&& rhs) noexcept = delete;
 };
 
 class fv_bgr_color_t : public fv_color_t{
@@ -38,7 +36,9 @@ public:
 
     fv_bgr_color_t& operator=(const fv_bgr_color_t& rhs) noexcept;
     fv_bgr_color_t& operator=(const fv_bgr_color_t&& rhs) noexcept;
-    fv_bgr_color_t& operator=(const fv_bgr_color_t rhs) noexcept;
+    void setColor(cv::Vec3b c){color = c;}
+
+    cv::Vec3b getColor() const {return color;}
 
 };
 
@@ -51,7 +51,9 @@ public:
 
     fv_grayscale_color_t& operator=(const fv_grayscale_color_t& rhs) noexcept;
     fv_grayscale_color_t& operator=(const fv_grayscale_color_t&& rhs) noexcept;
-    fv_grayscale_color_t& operator=(const fv_grayscale_color_t rhs) noexcept;
+    
+    void setColor(uchar c){color=c;}
+    uchar getColor() const {return color;}
 };
 
 #endif

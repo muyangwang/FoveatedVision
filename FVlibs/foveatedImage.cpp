@@ -1,4 +1,4 @@
-#include "receptiveField.h"
+#include "foveatedImage.h"
 
 #include "tools.h"
 #include <cstring>

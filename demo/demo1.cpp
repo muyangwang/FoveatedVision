@@ -3,7 +3,7 @@
 #include<iostream>
 #include<cstdlib>
 
-#include "../FVnew/receptiveField.h"
+#include "foveatedImage.h"
 
 using namespace cv;
 using namespace std;

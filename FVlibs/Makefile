@@ -1,8 +1,8 @@
 
 CC = g++
 CFLAGS = -g -c -O2 -Wall -std=c++11
-SRCS = receptiveField.cpp tools.cpp
-OBJS = receptiveField.o tools.o
+SRCS = foveatedImage.cpp tools.cpp
+OBJS = foveatedImage.o tools.o
 LIBS = FVlib.a
 
 

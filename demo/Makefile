@@ -24,14 +24,14 @@ endif
 
 OPENCVLIBS = $(OPENCV)
 
-LD = -I../FVnew
-MYLIBS = ../FVnew/FVlib.a
+LD = -I../FVlibs
+MYLIBS = ../FVlibs/FVlib.a
 
 demo1:$(demo1SRCS)
-	$(CC) $(CFLAGS) -o $(demo1PROG) $(demo1SRCS) $(OPENCVLIBS) $(MYLIBS)
+	$(CC) $(CFLAGS) -o $(demo1PROG) $(demo1SRCS) $(OPENCVLIBS) $(LD) $(MYLIBS)
 
 demo2:$(demo2SRCS)
-	$(CC) $(CFLAGS) -o $(demo2PROG) $(demo2SRCS) $(OPENCVLIBS) $(MYLIBS)
+	$(CC) $(CFLAGS) -o $(demo2PROG) $(demo2SRCS) $(OPENCVLIBS) $(LD) $(MYLIBS)
 
 ui:$(UISRCS)
 	$(CC) $(CFLAGS) -o $(UIPROG) $(UISRCS) $(OPENCVLIBS)

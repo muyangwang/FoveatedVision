@@ -1,4 +1,4 @@
-cd ../FVnew
+cd ../FVlibs
 make clean
 make libs
 cd ../demo

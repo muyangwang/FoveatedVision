@@ -56,7 +56,7 @@ int main(int argc, char** argv) {
 
     image = imread(imageName, IMREAD_COLOR);
 
-    cv::cvtColor(image, gImage, CV_BGR2GRAY);
+    cv::cvtColor(image, gImage, COLOR_BGR2GRAY);
 
     if (argc != 2 || !image.data) {
         cout << "no image data" << endl;

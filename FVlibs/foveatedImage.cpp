@@ -61,6 +61,14 @@ void foveatedImage_t::resetCenter(cv::Point newCenter) {
 cv::Mat* foveatedImage_t::createReconstructedImage() {
     int imageSize = FIELD_SIZE*pow(2, LAYER_NUMBER-1);
     this->reconstructedImage = new cv::Mat(imageSize, imageSize,CV_8UC3, cv::Scalar(0,0,0));
+    
+    cv::Vec3b black1;
+    black1[0] = 0;
+    black1[1] = 0;
+    black1[2] = 0;
+
+    uchar black2 = 0;
+
     for (int i = 0; i< LAYER_NUMBER; ++i) {
         int layer = LAYER_NUMBER-i-1;
         int blockSize = pow(2, layer);
@@ -72,10 +80,17 @@ cv::Mat* foveatedImage_t::createReconstructedImage() {
                     for (int m = 0; m < blockSize; ++m) {
                         switch(channel) {
                             case channel_t::bgr:
+                                if (!this->field[layer]->at(j,k).isValid()) {
+                                    this->reconstructedImage->at<cv::Vec3b>(cv::Point(xStartIndex+m,yStartInIndex+l)) = black1;
+                                    continue;
+                                }
                                 this->reconstructedImage->at<cv::Vec3b>(cv::Point(xStartIndex+m,yStartInIndex+l)) 
                                     = dynamic_cast<fv_bgr_color_t*>(&this->field[layer]->at(j,k))->getColor();
                                 break;
                             case channel_t::grayscale:
+                                if (!this->field[layer]->at(j,k).isValid()) {
+                                    this->reconstructedImage->at<uchar>(cv::Point(xStartIndex+m,yStartInIndex+l)) = black2;
+                                }
                                 this->reconstructedImage->at<cv::Vec3b>(cv::Point(xStartIndex+m,yStartInIndex+l)) 
                                     = dynamic_cast<fv_grayscale_color_t*>(&this->field[layer]->at(j,k))->getColor();
                                 break;

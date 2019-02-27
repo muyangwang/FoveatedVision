@@ -12,6 +12,7 @@ struct mouse_data_t{
     Point* curserPos;
     const char* imageName;
     const char* reconName;
+    const char* seriesName;
     foveatedImage_t* fv;
 };
 
@@ -33,7 +34,9 @@ static void onMouse(int event, int x, int y, int, void* data) {
 
     mouse_data->fv->resetCenter(Point(x, y));
     Mat* re = mouse_data->fv->getReconstructedImage();
+    Mat* se = mouse_data->fv->getFoveatedSeries();
     imshow(mouse_data->reconName, *re);
+    imshow(mouse_data->seriesName, *se);
 }
 
 int main(int argc, char** argv) {
@@ -48,10 +51,13 @@ int main(int argc, char** argv) {
     //set seed for random number
     srand(time(NULL));
 
-    Mat image;
+    Mat image, gImage;
     int xRange, yRange;
 
     image = imread(imageName, IMREAD_COLOR);
+
+    cv::cvtColor(image, gImage, CV_BGR2GRAY);
+
     if (argc != 2 || !image.data) {
         cout << "no image data" << endl;
         return -1;
@@ -67,6 +73,7 @@ int main(int argc, char** argv) {
     mouse_data.curserPos = &curserPos;
     mouse_data.imageName = imageName;
     mouse_data.reconName = "recon";
+    mouse_data.seriesName = "series";
 
 
     createTrackbar("curserPos_x", imageName, &curserPos.x, xRange, 0);
@@ -74,22 +81,32 @@ int main(int argc, char** argv) {
     setTrackbarPos("curserPos_x", imageName, xRange/2);
     setTrackbarPos("curserPos_y", imageName, yRange/2);
 
-    foveatedImage_t fvImage(&image, curserPos, bgr);
+    
+    //foveatedImage_t fvImage(&image, curserPos, bgr);
+    foveatedImage_t fvImage(&gImage, curserPos, grayscale);
     mouse_data.fv = &fvImage;
 
 
     Mat* re = fvImage.getReconstructedImage();
+    Mat* se = fvImage.getFoveatedSeries();
 
     setMouseCallback(imageName, onMouse, &mouse_data);
 
     imshow(imageName, image);
     imshow("recon", *re);
+    imshow("series", *se);
     while(0) {
         imshow(imageName, image);
         char c = (char)waitKey(0);
         if (c == 27) {
            cout << "End program" << endl;
             break;
+        }
+        else if (c == 'b') {
+            fvImage.setBorderedWindow();
+        }
+        else if (c == 'd') {
+            fvImage.setBorderlessWindow();
         }
     }
     waitKey(0);

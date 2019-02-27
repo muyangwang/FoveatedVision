@@ -35,7 +35,10 @@ private:
 
     /* pointers to reconstructedImages*/
     cv::Mat* reconstructedImage;
-    cv::Mat* embeddedReconstrcutedImage;
+    cv::Mat* foveatedSeries;
+
+    /*if recon image has border on each layer*/
+    bool ifReconHasBorder;
 
 
     /* select a color for a block, and store it in target*/
@@ -71,16 +74,25 @@ public:
     /* free the space for reconstructed image.*/
     void freeReconstructedImage();
     
-    /* creates an embedded version of image.*/
-    cv::Mat* createEmbeddedFoveatedImage();
+    /* create an image that consists of all 5 layers.*/
+    cv::Mat* createFoveatedSeries();
 
-    /* return the reconstructed embedded version of image if valid.
-     * call createEmbeddedFoveatedImage() if not yet created.
+     /* call createFoveatedSeries() if not yet created.
      */
-    cv::Mat* getReconstructedEmbeddedImage();
+    cv::Mat* getFoveatedSeries();
     
     /* free the embedded version of image*/
-    void freeEmbeddedReconstructedImage();
+    void freeFoveatedSeries();
+
+    cv::Point getCenterPos() const {
+        return this->centerPosition;
+    }
+
+    void setBorderedWindow();
+
+    void setBorderlessWindow();
+
+    bool ifReconBordered() const;
 
 
 };

@@ -11,7 +11,7 @@ foveatedImage_t::foveatedImage_t(cv::Mat* rawImage, cv::Point centerPosition, ch
         centerPosition(centerPosition),
         origin(rawImage),
         reconstructedImage(nullptr),
-        embeddedReconstrcutedImage(nullptr)
+        foveatedSeries(nullptr)
 {
     for (int i = 0; i < LAYER_NUMBER; ++i) {
         field[i] = new field_t(channel);
@@ -37,8 +37,8 @@ foveatedImage_t::~foveatedImage_t() {
     if (this->reconstructedImage != nullptr) {
         this->freeReconstructedImage();
     }
-    if (this->embeddedReconstrcutedImage != nullptr) {
-        this->freeEmbeddedReconstructedImage();
+    if (this->foveatedSeries != nullptr) {
+        this->freeFoveatedSeries();
     }
     for (int i = 0; i < LAYER_NUMBER; ++i) {
         delete field[i];
@@ -52,15 +52,23 @@ void foveatedImage_t::resetCenter(cv::Point newCenter) {
         delete this->reconstructedImage;
         this->createReconstructedImage();
     }
-    if (this->embeddedReconstrcutedImage != nullptr) {
-        delete this->embeddedReconstrcutedImage;
-        this->createEmbeddedFoveatedImage();
+    if (this->foveatedSeries != nullptr) {
+        delete this->foveatedSeries;
+        this->createFoveatedSeries();
     }
 }
 
 cv::Mat* foveatedImage_t::createReconstructedImage() {
     int imageSize = FIELD_SIZE*pow(2, LAYER_NUMBER-1);
-    this->reconstructedImage = new cv::Mat(imageSize, imageSize,CV_8UC3, cv::Scalar(0,0,0));
+    
+    switch (channel) {
+        case channel_t::bgr:
+            this->reconstructedImage = new cv::Mat(imageSize, imageSize,CV_8UC3, cv::Scalar(0,0,0));
+            break;
+        case channel_t::grayscale:
+            this->reconstructedImage = new cv::Mat(imageSize, imageSize, CV_8UC1, cv::Scalar(0));
+            break;
+    }
     
     cv::Vec3b black1;
     black1[0] = 0;
@@ -91,7 +99,7 @@ cv::Mat* foveatedImage_t::createReconstructedImage() {
                                 if (!this->field[layer]->at(j,k).isValid()) {
                                     this->reconstructedImage->at<uchar>(cv::Point(xStartIndex+m,yStartInIndex+l)) = black2;
                                 }
-                                this->reconstructedImage->at<cv::Vec3b>(cv::Point(xStartIndex+m,yStartInIndex+l)) 
+                                this->reconstructedImage->at<uchar>(cv::Point(xStartIndex+m,yStartInIndex+l)) 
                                     = dynamic_cast<fv_grayscale_color_t*>(&this->field[layer]->at(j,k))->getColor();
                                 break;
                         }
@@ -99,7 +107,37 @@ cv::Mat* foveatedImage_t::createReconstructedImage() {
                 }
             }
         }
+        
+        /* set all layers' border to white if ifReconHasBorder is set to true */
+        if (ifReconHasBorder) {
+            for (int i = 1; i < LAYER_NUMBER; ++i) {
+                /*
+                int topLeftX = FOVEATED_IMAGE_SIZE/2-FIELD_SIZE*i/2;
+                int topLeftY = FOVEATED_IMAGE_SIZE/2-FIELD_SIZE*i/2;
+
+                int topRightX = FOVEATED_IMAGE_SIZE/2+FIELD_SIZE*i/2-1;
+                int topRightY = FOVEATED_IMAGE_SIZE/2-FIELD_SIZE*i/2;
+
+                int botLeftX = FOVEATED_IMAGE_SIZE/2-FIELD_SIZE*i/2;
+                int botLeftY = FOVEATED_IMAGE_SIZE/2+FIELD_SIZE*i/2-1;
+
+                int botRightX = FOVEATED_IMAGE_SIZE/2+FIELD_SIZE*i/2-1;
+                int botRightY = FOVEATED_IMAGE_SIZE/2+FIELD_SIZE*i/2-1;*/
+
+                for (int j = 0; j < FIELD_SIZE*i; ++j) {
+                    switch (channel) {
+                        case channel_t::bgr:
+                            break;
+                        case channel_t::grayscale:
+                            break;
+                    }
+                }
+
+            }
+        }
     }
+
+
     return this->reconstructedImage;
 }
 
@@ -118,22 +156,52 @@ void foveatedImage_t::freeReconstructedImage() {
     }
 }
 
-cv::Mat* foveatedImage_t::createEmbeddedFoveatedImage() {
-    return this->embeddedReconstrcutedImage;
+cv::Mat* foveatedImage_t::createFoveatedSeries() {
+    switch (channel) {
+        case channel_t::bgr:
+            this->foveatedSeries = new cv::Mat(FIELD_SIZE*LAYER_NUMBER, FIELD_SIZE,CV_8UC3, cv::Scalar(0,0,0));
+            break;
+        case channel_t::grayscale:
+            this->foveatedSeries = new cv::Mat(FIELD_SIZE*LAYER_NUMBER, FIELD_SIZE, CV_8UC1, cv::Scalar(0));
+            break;
+    }
+
+    for (int i = 0; i < LAYER_NUMBER; ++i) {
+        for (int j = 0; j < FIELD_SIZE; ++j) {
+            for (int k = 0; k < FIELD_SIZE; ++k) {
+                switch (channel) {
+                    case channel_t::bgr:
+                        cout << (int)dynamic_cast<fv_bgr_color_t*>(&field[i]->at(j,k))->getColor().val[0] << endl;
+                        cout << "x: " << k << "y: " << i*FIELD_SIZE+j << endl;
+                        
+                        cout << "test" << endl;
+                        foveatedSeries->at<cv::Vec3b>(cv::Point(k,i*FIELD_SIZE+j)) 
+                            = dynamic_cast<fv_bgr_color_t*>(&field[i]->at(j,k))->getColor();
+                        break;
+                    case channel_t::grayscale:
+                        foveatedSeries->at<uchar>(cv::Point(k, i*FIELD_SIZE+j))
+                            = dynamic_cast<fv_grayscale_color_t*>(&field[i]->at(j,k))->getColor();
+                        break;
+                }
+            }
+        }
+    }
+
+    return this->foveatedSeries;
 }
 
-cv::Mat* foveatedImage_t::getReconstructedEmbeddedImage() {
-    if (this->embeddedReconstrcutedImage != nullptr) {
-        return this->embeddedReconstrcutedImage;
+cv::Mat* foveatedImage_t::getFoveatedSeries() {
+    if (this->foveatedSeries != nullptr) {
+        return this->foveatedSeries;
     }
     else {
-        return this->createEmbeddedFoveatedImage();
+        return this->createFoveatedSeries();
     }
 }
 
-void foveatedImage_t::freeEmbeddedReconstructedImage() {
-    if (this->embeddedReconstrcutedImage != nullptr) {
-        delete this->embeddedReconstrcutedImage;
+void foveatedImage_t::freeFoveatedSeries() {
+    if (this->foveatedSeries != nullptr) {
+        delete this->foveatedSeries;
     }
 }
 
@@ -173,16 +241,6 @@ void foveatedImage_t::colorSelector(int pos_y, int pos_x, int layer, fv_color_t&
             target.setValid(false);
             return;
         }
-
-        //        pos_y+blockSize-1 < imHeight &&
-        //        pos_x >= 0 &&
-        //        pos_y+blockSize-1 < imWidth) {
-            // the entire block is in range.
-            // Set block color to a random pixel
-            
-            
-        //    return c;
-        //}
         
         // The block has at least part in range.
         // we select a random pixel for the inrange part.
@@ -225,4 +283,21 @@ void foveatedImage_t::colorSelector(int pos_y, int pos_x, int layer, fv_color_t&
     return;
 }
 
+void foveatedImage_t::setBorderedWindow() {
+    if (ifReconHasBorder) return;
+    ifReconHasBorder = true;
+    delete reconstructedImage;
+    createReconstructedImage();
+}
+
+void foveatedImage_t::setBorderlessWindow() {
+    if (!ifReconHasBorder) return;
+    ifReconHasBorder = false;
+    delete reconstructedImage;
+    createReconstructedImage();
+}
+
+bool foveatedImage_t::ifReconBordered() const {
+    return ifReconHasBorder;
+}
 

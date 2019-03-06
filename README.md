@@ -12,7 +12,7 @@ FoveatedVision Library aims at creating a tool to accerate image processing.
 4. [Demos](#demo)
 
 ## Innovation
-Human vision has a 
+Put some intro/background here.
 ## Build
 
 ##### File structures

@@ -141,6 +141,7 @@ This demo reads video stream from your default camera and create a corresponding
 The original video is displayed in window webcam, and foveated video i sdisplayed in window foveatedVideo.
 
 [sample raw video](https://youtu.be/HaR8QxSTn4g)
+
 [sample foveated video](https://youtu.be/XfGjeiPaKXg)
 
 ####demo3
@@ -149,8 +150,19 @@ Usage:
 ```sh
 $ ./demo3 [imagename]
 ```
+The program will pause once a salient or salient candidate is found, and move center of foveated image to the "interesting area". Press any key to go into next iteration.
 
 
+example input:
+
+<img src="img/d1.jpeg" height="300" />
+
+captures salient:
+
+
+<img src="img/d3r1.png" height="400" />
+<img src="img/d3r2.png" height="400" />
+<img src="img/d3r3.png" height="400" />
 
 
 

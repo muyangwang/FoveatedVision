@@ -28,8 +28,6 @@ int main(int argc, char** argv) {
     char * imageName = argv[1];
     srand(time(NULL));
 
-    int a;
-
     Mat image1, image;
     image1 = imread(imageName, IMREAD_COLOR);
     imshow(imageName, image1);
@@ -41,10 +39,6 @@ int main(int argc, char** argv) {
 
     cvtColor(image1, image, CV_BGR2GRAY);
     namedWindow(imageName, WINDOW_AUTOSIZE);
-
-    cin >> a;
-    cout << "print raw" << endl;
-    cin >> a;
 
     int xRange = image.cols;
     int yRange = image.rows;

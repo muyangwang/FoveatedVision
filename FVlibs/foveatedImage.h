@@ -87,6 +87,9 @@ public:
     cv::Point getCenterPos() const {
         return this->centerPosition;
     }
+    
+    /* get layer's detail value*/
+    cv::Mat getLayer(int i);
 
     void setBorderedWindow();
 

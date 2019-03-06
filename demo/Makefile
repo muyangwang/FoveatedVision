@@ -4,6 +4,8 @@ demo1SRCS = demo1.cpp
 demo1PROG = demo1.exe
 demo2SRCS = demo2.cpp
 demo2PROG = demo2.exe
+demo3SRCS = demo3.cpp
+demo3PROG = demo3.exe
 UISRCS = ui.cpp
 UIPROG = ui.exe
 TESTSRCS = test.cpp
@@ -32,6 +34,10 @@ demo1:$(demo1SRCS)
 
 demo2:$(demo2SRCS)
 	$(CC) $(CFLAGS) -o $(demo2PROG) $(demo2SRCS) $(OPENCVLIBS) $(LD) $(MYLIBS)
+
+demo3:$(demo3SRCS)
+	$(CC) $(CFLAGS) -o $(demo3PROG) $(demo3SRCS) $(OPENCVLIBS) $(LD) $(MYLIBS)
+
 
 ui:$(UISRCS)
 	$(CC) $(CFLAGS) -o $(UIPROG) $(UISRCS) $(OPENCVLIBS)

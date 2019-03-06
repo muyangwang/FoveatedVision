@@ -283,6 +283,34 @@ void foveatedImage_t::colorSelector(int pos_y, int pos_x, int layer, fv_color_t&
     return;
 }
 
+cv::Mat foveatedImage_t::getLayer(int layer) {
+    switch(channel) {
+        case channel_t::grayscale:
+        {
+            cv::Mat r1(FIELD_SIZE, FIELD_SIZE, CV_8UC1, cv::Scalar(0));
+            // x:i, y:j
+            for (int i = 0; i < FIELD_SIZE; ++i) {
+                for (int j = 0; j < FIELD_SIZE; ++j) {
+                        r1.at<uchar>(j,i) = dynamic_cast<fv_grayscale_color_t&>(field[layer]->at(j,i)).getColor();
+                }
+            }
+            return r1;
+        }
+        case channel_t::bgr:
+        {
+            cv::Mat r2(FIELD_SIZE, FIELD_SIZE, CV_8UC3, cv::Scalar(0,0,0));
+            for (int i = 0; i < FIELD_SIZE; ++i) {
+                for (int j = 0; j < FIELD_SIZE; ++j) {
+                    r2.at<cv::Vec3b>(j,i) = dynamic_cast<fv_bgr_color_t&>(field[i]->at(j,i)).getColor();
+                }
+            }
+            return r2;
+        }
+    }
+    return cv::Mat(FIELD_SIZE, FIELD_SIZE, CV_8UC1, cv::Scalar(0));
+}
+
+
 void foveatedImage_t::setBorderedWindow() {
     if (ifReconHasBorder) return;
     ifReconHasBorder = true;

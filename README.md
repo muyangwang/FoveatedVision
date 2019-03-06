@@ -115,7 +115,7 @@ return layer image.
 
 Sample rawImage and corresponding reconstructed image and foveat image series:
 <p float="left">
-  <img src="img/raw.png" height="400" /><img src="img/recon.png" height="400" /> <img src="img/series.png" height="400" /> 
+  <img src="img/raw.png" height="300" /><img src="img/recon.png" height="300" /> <img src="img/series.png" height="300" /> 
 </p>
 
 ## demo

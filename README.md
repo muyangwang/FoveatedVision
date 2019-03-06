@@ -119,7 +119,30 @@ Sample rawImage and corresponding reconstructed image and foveat image series:
 </p>
 
 ## demo
+Current project includes 3 simple demos:
 
+#### demo1
+Usage:
+```sh
+$ ./demo1 [imagename] [colorType]
+```
+`colorType` can be either 0(bgr) or 1(grayscale).
+
+Click on the original image to set the center position of the foveated image. The x,y pixel location can be seen on the track bar of the original image.
+
+#### demo2
+Usage:
+```sh
+$ ./demo2
+```
+**Need a valid webcam to run the program**.
+This demo reads video stream from your default camera and create a corresponding foveated video stream.
+
+The original video is displayed in window webcam, and foveated video i sdisplayed in window foveatedVideo.
+
+sample raw video:
+
+sample foveated video:
 
 
 

@@ -41,6 +41,12 @@ int main( int argc, const char** argv )
     namedWindow("webcam", WINDOW_AUTOSIZE);
     namedWindow("foveatedVideo", WINDOW_AUTOSIZE);
 
+    int frame_width =  cap.get(CV_CAP_PROP_FRAME_WIDTH);
+    int frame_height = cap.get(CV_CAP_PROP_FRAME_HEIGHT);
+
+    VideoWriter videoRaw("rawStream.avi",CV_FOURCC('M','J','P','G'),10, Size(frame_width,frame_height),true);
+    VideoWriter videoFv("FvStream.avi",CV_FOURCC('M','J','P','G'),10, Size(512,512),true);
+
     while(true){
         cap >> image;
         if(image.empty()){
@@ -48,10 +54,14 @@ int main( int argc, const char** argv )
             continue;
         }
         imshow("webcam", image);
+        videoRaw.write(image);
         foveatedImage_t fv(&image, curserPos, bgr);
         Mat* fvRecon = fv.getReconstructedImage();
+        cout << fvRecon->rows << fvRecon->cols<< endl;
         imshow("foveatedVideo", *fvRecon);
-        waitKey(5);
+        videoFv.write(*fvRecon);
+        char c = (char)waitKey(33);
+        if( c == 27 ) break;
    }
 
    return 0;

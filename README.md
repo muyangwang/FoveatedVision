@@ -140,11 +140,15 @@ This demo reads video stream from your default camera and create a corresponding
 
 The original video is displayed in window webcam, and foveated video i sdisplayed in window foveatedVideo.
 
-sample raw video:
+[sample raw video](https://youtu.be/HaR8QxSTn4g)
+[sample foveated video](https://youtu.be/XfGjeiPaKXg)
 
-sample foveated video:
-
-
+####demo3
+This demo reads an image of "black dots", and we sacade through the image using foveated vision to find those salient objects.
+Usage:
+```sh
+$ ./demo3 [imagename]
+```
 
 
 

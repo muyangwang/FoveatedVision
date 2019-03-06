@@ -3,6 +3,7 @@
 #include<iostream>
 #include<cstdlib>
 #include<chrono>
+#include<string>
 
 #include "foveatedImage.h"
 
@@ -42,6 +43,8 @@ static void onMouse(int event, int x, int y, int, void* data) {
 
 int main(int argc, char** argv) {
     char* imageName = argv[1];
+    char* c = argv[2];
+    int colorType = atoi(c);
     
     cv::CommandLineParser parser(argc, argv,"{help h | | show help message}{@image|fruits.jpg| input image}");
     if (parser.has("help")) {
@@ -59,10 +62,14 @@ int main(int argc, char** argv) {
 
     cv::cvtColor(image, gImage, COLOR_BGR2GRAY);
 
-    if (argc != 2 || !image.data) {
+    if (!image.data) {
         cout << "no image data" << endl;
         return -1;
     }
+    if (colorType !=0 || colorType != 1) {
+        cout << "invalid color type" << endl;
+    }
+
     help();
     xRange = image.cols;
     yRange = image.rows;
@@ -82,27 +89,32 @@ int main(int argc, char** argv) {
     setTrackbarPos("curserPos_x", imageName, xRange/2);
     setTrackbarPos("curserPos_y", imageName, yRange/2);
 
-    
-    //foveatedImage_t fvImage(&image, curserPos, bgr);
+    foveatedImage_t* fvImage;
     auto start = chrono::steady_clock::now();
-    foveatedImage_t fvImage(&gImage, curserPos, grayscale);
+    //foveatedImage_t fvImage(&gImage, curserPos, grayscale);
+    if (colorType == 0) {
+        fvImage = new foveatedImage_t(&image, curserPos, bgr);
+    }
+    else {
+        fvImage = new foveatedImage_t(&gImage, curserPos, grayscale);
+    }
     auto end = chrono::steady_clock::now();
     auto diff = end-start;
     cout << "fvImage generation time" << chrono::duration <double, milli> (diff).count() << " ms" << endl;
-    mouse_data.fv = &fvImage;
+    mouse_data.fv = fvImage;
 
     start = chrono::steady_clock::now();
-    Mat* re = fvImage.getReconstructedImage();
+    Mat* re = fvImage->getReconstructedImage();
     end = chrono::steady_clock::now();
     diff = end-start;
-    Mat* se = fvImage.getFoveatedSeries();
+    Mat* se = fvImage->getFoveatedSeries();
 
     setMouseCallback(imageName, onMouse, &mouse_data);
 
     imshow(imageName, image);
     imshow("recon", *re);
     imshow("series", *se);
-    while(0) {
+    while(1) {
         imshow(imageName, image);
         char c = (char)waitKey(0);
         if (c == 27) {
@@ -110,12 +122,13 @@ int main(int argc, char** argv) {
             break;
         }
         else if (c == 'b') {
-            fvImage.setBorderedWindow();
+            fvImage->setBorderedWindow();
         }
         else if (c == 'd') {
-            fvImage.setBorderlessWindow();
+            fvImage->setBorderlessWindow();
         }
     }
     waitKey(0);
+    delete fvImage;
     return 0;
 }

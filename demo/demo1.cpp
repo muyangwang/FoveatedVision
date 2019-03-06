@@ -67,7 +67,7 @@ int main(int argc, char** argv) {
         return -1;
     }
     if (colorType !=0 || colorType != 1) {
-        cout << "invalid color type" << endl;
+        cout << "invalid color type" << colorType<< endl;
     }
 
     help();
@@ -100,14 +100,20 @@ int main(int argc, char** argv) {
     }
     auto end = chrono::steady_clock::now();
     auto diff = end-start;
-    cout << "fvImage generation time" << chrono::duration <double, milli> (diff).count() << " ms" << endl;
+    cout << "fv obj generation time" << chrono::duration <double, milli> (diff).count() << " ms" << endl;
     mouse_data.fv = fvImage;
 
     start = chrono::steady_clock::now();
     Mat* re = fvImage->getReconstructedImage();
     end = chrono::steady_clock::now();
     diff = end-start;
+    cout << "recon time " << chrono::duration<double, milli> (diff).count() << " ms" << endl;
+
+    start = chrono::steady_clock::now();
     Mat* se = fvImage->getFoveatedSeries();
+    end = chrono::steady_clock::now();
+    diff = end-start;
+    cout << "series creation time " << chrono::duration<double, milli> (diff).count() << " ms" << endl;
 
     setMouseCallback(imageName, onMouse, &mouse_data);
 

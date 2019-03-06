@@ -171,10 +171,6 @@ cv::Mat* foveatedImage_t::createFoveatedSeries() {
             for (int k = 0; k < FIELD_SIZE; ++k) {
                 switch (channel) {
                     case channel_t::bgr:
-                        cout << (int)dynamic_cast<fv_bgr_color_t*>(&field[i]->at(j,k))->getColor().val[0] << endl;
-                        cout << "x: " << k << "y: " << i*FIELD_SIZE+j << endl;
-                        
-                        cout << "test" << endl;
                         foveatedSeries->at<cv::Vec3b>(cv::Point(k,i*FIELD_SIZE+j)) 
                             = dynamic_cast<fv_bgr_color_t*>(&field[i]->at(j,k))->getColor();
                         break;

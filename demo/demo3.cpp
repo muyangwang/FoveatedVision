@@ -84,7 +84,7 @@ int main(int argc, char** argv) {
         cout << "      y: " << s.curserPos.y << endl;
         Mat Recon = *fvImage.getReconstructedImage();
         
-        string line = "x: " + to_string(s.curserPos.x) + "\ny: " + to_string(s.curserPos.y);
+        string line = "x: " + to_string(s.curserPos.x) + "\ny: " + to_string(s.curserPos.y) + "\nLayer: " + to_string(s.searchLayer);
         cv::putText( Recon, line.c_str(), cvPoint(30,30), 
                 FONT_HERSHEY_COMPLEX_SMALL, 0.8, cvScalar(200,200,250), 1, CV_AA);
         imshow("fvImage", Recon);

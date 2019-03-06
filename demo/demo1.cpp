@@ -2,6 +2,7 @@
 #include <opencv2/highgui.hpp>
 #include<iostream>
 #include<cstdlib>
+#include<chrono>
 
 #include "foveatedImage.h"
 
@@ -83,11 +84,17 @@ int main(int argc, char** argv) {
 
     
     //foveatedImage_t fvImage(&image, curserPos, bgr);
+    auto start = chrono::steady_clock::now();
     foveatedImage_t fvImage(&gImage, curserPos, grayscale);
+    auto end = chrono::steady_clock::now();
+    auto diff = end-start;
+    cout << "fvImage generation time" << chrono::duration <double, milli> (diff).count() << " ms" << endl;
     mouse_data.fv = &fvImage;
 
-
+    start = chrono::steady_clock::now();
     Mat* re = fvImage.getReconstructedImage();
+    end = chrono::steady_clock::now();
+    diff = end-start;
     Mat* se = fvImage.getFoveatedSeries();
 
     setMouseCallback(imageName, onMouse, &mouse_data);

@@ -8,7 +8,7 @@ FoveatedVision Library aims at creating a tool to accerate image processing.
 # Table of Contents
 1. [Innovation](#Innovation)
 2. [Build](#Build)
-3. [API](##API)
+3. [Interface](##Interface)
 4. [Demos](#demo)
 
 ## Innovation
@@ -67,7 +67,7 @@ $ cd demo
 $ chmod +x build.sh
 $ ./build.sh
 ```
-## API
+## Interface
 The library structure:
 
 | filename | Usage |

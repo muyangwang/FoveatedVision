@@ -17,6 +17,7 @@ Human vision has a
 
 ##### File structures
 The file structure of the project:
+
 | DirName | Usage |
 | ------ | ------ |
 | FVlibs | C++ Library for foveated Vision|
@@ -68,6 +69,7 @@ $ ./build.sh
 ```
 ## API
 The library structure:
+
 | filename | Usage |
 | ------ | ------ |
 | color.h/cpp | color class for foveated images|
@@ -163,6 +165,8 @@ captures salient:
 <img src="img/d3r1.png" height="400" />
 <img src="img/d3r2.png" height="400" />
 <img src="img/d3r3.png" height="400" />
+
+Muyang Wang 2019
 
 
 

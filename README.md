@@ -3,7 +3,116 @@
 A c++ project based on
 [![N|Solid](https://opencv.org/assets/theme/logo.png)](https://opencv.org/)
 
-FoveatedVision Library aims at creating a tool to accerate image processing 
+FoveatedVision Library aims at creating a tool to accerate image processing.
+
+# Table of Contents
+1. [Innovation](#Innovation)
+2. [Build](#Build)
+3. [API](##API)
+4. [Demos](#demo)
+
+## Innovation
+Human vision has a 
+## Build
+
+##### File structures
+The file structure of the project:
+| DirName | Usage |
+| ------ | ------ |
+| FVlibs | C++ Library for foveated Vision|
+| Matlab | Matlab test codes |
+| demo | several demo programs using the libray |
+| test | testcases |
+| utilities | utility functions/files |
+| img | Used image and results |
+
+##### Prerequest
+The project requires installation of opencv libraries(Version used: `openCV 4.0.1`) and support for `c++11`.
+
+You can install openCV through [`homebrew`](https://brew.sh/) on Mac:
+```sh
+$ brew install opencv
+$ brew install pkg-config
+```
+You can install openCV from [`source`](https://docs.opencv.org/3.4/d7/d9f/tutorial_linux_install.html) or package manager on Linux machines.
+
+Make sure 
+```sh
+$ pkg-config opencv --cflags --libs
+```
+can correctly return link info for opencv libraries.
+
+
+To build the library only:
+```sh
+$ cd FVlibs
+$ make clean
+$ make libs
+```
+A static library named `FVlib.a` will be created. Use the library with the `.h` files in the same directory.
+
+To build demos, execute 
+```sh
+$ cd demo
+$ make demo1
+$ make demo2
+$ make demo3
+```
+to build each demo separately if **the library is already compiled and saved as FVlibs/FVlib.a**.
+
+To build **the library and all demos together**, execute
+```sh
+$ cd demo
+$ chmod +x build.sh
+$ ./build.sh
+```
+## API
+The library structure:
+| filename | Usage |
+| ------ | ------ |
+| color.h/cpp | color class for foveated images|
+| field.h | field class storing info of each layer |
+| foveatedImage.h/cpp | foveatedImage class |
+| foveatredVideo.h/cpp | fv class for webcam stream(not implemented yet) |
+| img | Used image and results |
+
+foveatedImage.h/cpp `foveatedImage_t` class member function interface:
+
+```sh
+1. foveatedImage_t::foveatedImage_t(cv::Mat* rawImage, cv::Point centerPosition, channel_t channel);
+```
+Create a foveated image object from an openCV Mat image. Must specify fovea center on the raw image. Color channel can be either `bgr` or `grayscale`.
+
+```sh
+2. void foveatedImage_t::resetCenter(cv::Point newCenter);
+```
+Choose a new center for current foveated image.
+
+```sh
+3. cv::Mat* createReconstructedImage();
+```
+Create a visualized reconstructed foveated image.
+Example raw image and corresponding reconstructed image :
+<p float="left">
+  <img src="img/raw.png" width="400" />
+  <img src="img/recon.png" width="300" /> 
+</p>
+
+
+
+## demo
+
+
+
+
+
+
+
+
+
+
+
+
 
   - Type some Markdown on the left
   - See HTML in the right

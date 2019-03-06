@@ -37,7 +37,7 @@ int main(int argc, char** argv) {
         return -1;
     }
 
-    cvtColor(image1, image, CV_BGR2GRAY);
+    cvtColor(image1, image, COLOR_BGR2GRAY);
     namedWindow(imageName, WINDOW_AUTOSIZE);
 
     int xRange = image.cols;
@@ -85,8 +85,8 @@ int main(int argc, char** argv) {
         Mat Recon = *fvImage.getReconstructedImage();
         
         string line = "x: " + to_string(s.curserPos.x) + "\ny: " + to_string(s.curserPos.y) + "\nLayer: " + to_string(s.searchLayer);
-        cv::putText( Recon, line.c_str(), cvPoint(30,30), 
-                FONT_HERSHEY_COMPLEX_SMALL, 0.8, cvScalar(200,200,250), 1, CV_AA);
+        cv::putText( Recon, line.c_str(), cv::Point(30,30),
+                    FONT_HERSHEY_COMPLEX_SMALL, 0.8, cv::Scalar(200,200,250), 1, LINE_AA);
         imshow("fvImage", Recon);
         
 
